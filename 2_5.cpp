@@ -20,6 +20,11 @@ Output: 9 -> 1 -> 2.That is, 912
 #include<climits>
 /*
 INT_MAX, INT_MIN的使用直接引入<climits>即可。
+NULL的使用不需要引入文件
+
+1. 这道题的本意还是大数相加， 重写在addList()里面
+2. reverseList竟然之前做题的时候没有实现过，这里也实现一下备用。
+3. 指针声明了一定要赋值。
 */
 
 struct LinkedNode {
@@ -29,7 +34,7 @@ struct LinkedNode {
 };
 
 LinkedNode* geneLinkedList(std::vector<int> &vec) {
-   LinkedNode *head, *node;
+   LinkedNode *head=NULL, *node=NULL;
    for (int i=0; i<vec.size(); i++) {
         if (i == 0) {
             head = new LinkedNode(vec[i]);
@@ -87,11 +92,57 @@ int sumLists(LinkedNode *a, LinkedNode *b) {
         return res_a+res_b;
 }
 
+LinkedNode* reverseList(LinkedNode* head) {
+    LinkedNode *pre=NULL, *cur=head, *pos=NULL;
+    while (cur!=NULL) {
+        pos = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = pos;
+    }
+    return pre;
+}
+
+LinkedNode* addLists(LinkedNode *a, LinkedNode *b) {
+   LinkedNode *head=NULL, *ptr=NULL;
+   int carry = 0;
+   while (a!=NULL && b !=NULL) {
+        if (head==NULL) {
+            head = new LinkedNode((a->val+b->val+carry)%10);
+            ptr = head;
+        } else {
+            ptr->next = new LinkedNode((a->val+b->val+carry)%10);
+            ptr = ptr->next;
+        }
+        carry = (a->val+b->val+carry)/10;
+        a = a->next;
+        b = b->next;
+   }
+   LinkedNode *p = NULL;
+   a!=NULL ? p=a : p=b;
+   while (p!=NULL) {
+        if (head==NULL) {
+            head = new LinkedNode((p->val+carry)%10);
+            ptr = head;
+        } else {
+            ptr->next = new LinkedNode((p->val+carry)%10);
+            ptr = ptr->next;
+        }
+        carry = (p->val+carry)/10;
+        p = p->next;
+   }
+   if (carry==1) {
+        ptr->next = new LinkedNode(1);
+   }
+   return head;
+}
+
+
 
 int main() {
-    std::vector<int> vec1 = {7, 1, 6};
-    std::vector<int> vec2 = {5, 9, 2};
-    std::cout<<sumLists(geneLinkedList(vec1), geneLinkedList(vec2));
+    std::vector<int> vec1 = {9,91,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9};
+    std::vector<int> vec2 = {};
+    printLinkedList(reverseList(geneLinkedList(vec2)));
     return 0;
 }
 
